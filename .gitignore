@@ -1,0 +1,11 @@
+.venv/
+kk/config.py
+__pycache__/
+.env
+Dockerfile
+docker-compose.yml
+.vscode/
+scripts/
+data/
+img/
+LICENSE
