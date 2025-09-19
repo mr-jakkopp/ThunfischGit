@@ -52,7 +52,7 @@ class Katzenklo(commands.Cog):
     async def _cat_visit_scheduler(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            next_hour = (now().hour + ((EVENT_HOURS_SHIFT - now()) % EVENT_HOURS or EVENT_HOURS)) % 24 # too lazy to fix issue with timezones in docker
+            next_hour = (now().hour + ((EVENT_HOURS_SHIFT - now().hour) % EVENT_HOURS or EVENT_HOURS)) % 24 # too lazy to fix issue with timezones in docker
             print(f"Uhrzeit: {now().hour} | Nächster Besuch: {next_hour}")
             await wait_until_hour(next_hour, 0)
             await self._regular_event()
