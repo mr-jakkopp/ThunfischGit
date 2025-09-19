@@ -31,7 +31,7 @@ from kk.ui.shop_view import ShopView, group_items
 from kk.ui.inventory_view import InventoryView
 from kk.ui.summary_view import ClearSummaryView
 from kk.ui.katzalog_view import KatzalogView
-from kk.utils import intersect
+from kk.utils import intersect, now
 
 
 class Katzenklo(commands.Cog):
@@ -51,8 +51,8 @@ class Katzenklo(commands.Cog):
     async def _cat_visit_scheduler(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            next_hour = (datetime.datetime.now().hour + 2 + EVENT_HOURS - ((datetime.datetime.now().hour + 2) % EVENT_HOURS) - 4) % 24 # too lazy to fix issue with timezones in docker
-            print(f"Uhrzeit: {datetime.datetime.now().hour + 2} ({datetime.datetime.now().hour}) | Nächster Besuch: {next_hour + 2} ({next_hour})")
+            next_hour = (now().hour + EVENT_HOURS - ((now().hour) % EVENT_HOURS) - 2) % 24 # too lazy to fix issue with timezones in docker
+            print(f"Uhrzeit: {now().hour} | Nächster Besuch: {next_hour}")
             await wait_until_hour(next_hour, 0)
             await self._regular_event()
             # print("Uhrzeit:", datetime.datetime.now().hour,"| Nächster Besuch:", datetime.datetime.now() + datetime.timedelta(minutes=3))
@@ -123,7 +123,7 @@ class Katzenklo(commands.Cog):
                 final_leave_percent = LEAVE_PERCENT**(1/(DIRTY_MULTIPLIER_PERCENTS**(int("piss" in stats[uid]["dirty"]) + int("poop" in stats[uid]["dirty"]))))
                 leaving = (random.random() < final_leave_percent)
                 if leaving:
-                    message = f"Deine Katze {stats[uid]["occupied"]} hat dich leider verlassen und dein Katzenklo ist jetzt unbesetzt. ({datetime.datetime.now().strftime("am %d.%m.%Y um %H Uhr")})"
+                    message = f"Deine Katze {stats[uid]["occupied"]} hat dich leider verlassen und dein Katzenklo ist jetzt unbesetzt. ({now().strftime("am %d.%m.%Y um %H Uhr")})"
                     stats[uid]["occupied"] = False
                     stats[uid]["summary"].append(message)
 
@@ -137,7 +137,7 @@ class Katzenklo(commands.Cog):
                 final_no_cat_percent = NO_CAT_PERCENT**(1/(DIRTY_MULTIPLIER_PERCENTS**(2*int("piss" in stats[uid]["dirty"]) + 4*int("poop" in stats[uid]["dirty"]))))
                 if random.random() > final_no_cat_percent:
                     chosen_cat = random.choice(cat_list)
-                    message = f"Die Katze {cats[chosen_cat]["name"]} hat sich in dein Katzenklo gesetzt. ({datetime.datetime.now().strftime("am %d.%m.%Y um %H Uhr")})"
+                    message = f"Die Katze {cats[chosen_cat]["name"]} hat sich in dein Katzenklo gesetzt. ({now().strftime("am %d.%m.%Y um %H Uhr")})"
                     stats[uid]["summary"].append(message)
                     stats[uid]["occupied"] = chosen_cat
                     if chosen_cat not in stats[uid]["cats_seen"]:
@@ -181,7 +181,7 @@ class Katzenklo(commands.Cog):
                     stats[uid]["balance"] += pay_amount
                     stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"] = min(stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"], pay_amount) if stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"] is not None else pay_amount
                     stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"] = max(stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"], pay_amount) if stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"] is not None else pay_amount
-                    message = f"Die Katze {cats[stats[uid]["occupied"]]["name"]} hat dir einen wertvollen Gegenstand mitgebracht. Du hast ihn für {pay_amount}ℂ verkauft. ({datetime.datetime.now().strftime("am %d.%m.%Y um %H Uhr")})"
+                    message = f"Die Katze {cats[stats[uid]["occupied"]]["name"]} hat dir einen wertvollen Gegenstand mitgebracht. Du hast ihn für {pay_amount}ℂ verkauft. ({now().strftime("am %d.%m.%Y um %H Uhr")})"
                     stats[uid]["summary"].append(message)
 
             # ------------- CAT USES LITTER BOX -------------
@@ -193,7 +193,7 @@ class Katzenklo(commands.Cog):
                 if "piss" in state or random.random() < PISS_PERCENT: new_state += "piss"
                 if "poop" in state or random.random() < POOP_PERCENT: new_state += "poop"
                 new_state = "clean" if new_state == "" else new_state
-                message = f"Die Katzenklo ist jetzt im Zustand: {LITTERSTATE_NAMES[new_state]}. ({datetime.datetime.now().strftime("am %d.%m.%Y um %H Uhr")})"#
+                message = f"Die Katzenklo ist jetzt im Zustand: {LITTERSTATE_NAMES[new_state]}. ({now().strftime("am %d.%m.%Y um %H Uhr")})"#
                 stats[uid]["summary"].append(message)
                 stats[uid]["dirty"] = new_state
 
