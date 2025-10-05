@@ -307,13 +307,14 @@ class Katzenklo(commands.Cog):
 
     @katzenklo_group.command(name="show", description="Zeigt dein Katzenklo mit allen Items")
     async def show(self, ctx: commands.Context, user: discord.User = None):
+        await ctx.interaction.response.defer(thinking=True)
         user = ctx.author if user == None else user
         user_id = str(user.id)
         stats = load_stats()
         cats = load_cats()
 
         if user_id not in stats or "equipped" not in stats[user_id]:
-            await ctx.send("❌ Du besitzt noch keine Items.")
+            await ctx.interaction.followup.send("❌ Du besitzt noch keine Items.")
             return
 
         equipped = stats[user_id]["equipped"]
@@ -325,7 +326,7 @@ class Katzenklo(commands.Cog):
 
         base = render_katzenklo(equipped, litter_state, occupied, load_shop())
         if not base:
-            await ctx.send("❌ Keine gültigen Items gefunden.")
+            await ctx.interaction.followup.send("❌ Keine gültigen Items gefunden.")
             return
 
         buffer = io.BytesIO()
@@ -339,7 +340,7 @@ class Katzenklo(commands.Cog):
         embed.add_field(name="ℂ 💰", value=str(balance), inline=True)
         embed.add_field(name="Neuigkeiten 🔰", value=str(news_count), inline=True)
         embed.set_image(url="attachment://katzenklo.png")
-        await ctx.send(embed=embed, file=file)
+        await ctx.interaction.followup.send(embed=embed, file=file)
 
     @katzenklo_group.command(name="balance", description="Zeigt dein Münzkonto")
     async def balance(self, ctx: commands.Context):
