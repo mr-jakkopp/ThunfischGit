@@ -178,7 +178,7 @@ class Katzenklo(commands.Cog):
             # ------------- CAT GIVES STUFF AND PAYS ------------- (GIVES STUFF WIP)
             if stats[uid]["occupied"]:
                 if random.random() < CAT_PAYOUT_PERCENT:
-                    pay_amount = random.randrange(cats[stats[uid]["occupied"]]["pay_min"], cats[stats[uid]["occupied"]]["pay_max"])
+                    pay_amount = random.randrange(cats[stats[uid]["occupied"]]["pay_min"], cats[stats[uid]["occupied"]]["pay_max"]+1)
                     stats[uid]["balance"] += pay_amount
                     stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"] = min(stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"], pay_amount) if stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_min"] is not None else pay_amount
                     stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"] = max(stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"], pay_amount) if stats[uid]["cats_seen"][stats[uid]["occupied"]]["pay_max"] is not None else pay_amount
